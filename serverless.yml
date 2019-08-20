@@ -38,9 +38,9 @@ provider:
       Action:
         - s3:*
       Resource: "*"
-      
+
 functions:
-  MasterPayment:
+  MasterPayment: 
     handler: controllers/payment/index.handler
     timeout: 300
     events:
