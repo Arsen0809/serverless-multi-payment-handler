@@ -1,0 +1,6 @@
+{
+  "Pay": "Pay-prod",
+  "PaymentProcess": "PaymentProcess-prod",
+  "PsiGatePayment": "PsiGatePayment-prod",
+  "CoinPaymentsPayment": "CoinPaymentsPayment-prod"
+}

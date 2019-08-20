@@ -1,0 +1,80 @@
+service: payment-processing
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+custom:
+  webpackIncludeModules: true
+  snsTopics: ${file(./configs/sns-topics.${self:provider.stage}.json)}
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: ${env:STAGE, 'dev'}
+  region: ${env:AWS_DEFAULT_REGION, 'us-east-1'}
+  environment:
+    STAGE: ${self:provider.stage, 'dev'}
+    REGION: ${self:provider.region, 'us-east-1'}
+    COGNITO_USERPOOL: ${env:COGNITO_USERPOOL}
+    COGNITO_IDENTITY_POOL: ${env:COGNITO_IDENTITY_POOL}
+    AWS_ACCOUNT_NO: ${env:AWS_ACCOUNT_NO}
+    COGNITO_CLIENT: ${env:COGNITO_CLIENT}
+    AWS_ACCESS_KEY_ID: ${env:AWS_ACCESS_KEY_ID}
+    AWS_SECRET_ACCESS_KEY: ${env:AWS_SECRET_ACCESS_KEY}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:*
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "sns:*"
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - "sqs:*"
+      Resource: "*"
+    - Effect: "Allow"
+      Action:
+        - s3:*
+      Resource: "*"
+      
+functions:
+  MasterPayment:
+    handler: controllers/payment/index.handler
+    timeout: 300
+    events:
+      - http:
+          path: payment
+          method: post
+          cors: true
+  PaymentHandler:
+    handler: controllers/payment/process.handler
+    timeout: 300
+    events:
+      - sns: ${self:custom.snsTopics.Pay}
+  PaymentProcess:
+    handler: controllers/payment-process/handler.handler
+    timeout: 300
+    events:
+      - sns: ${self:custom.snsTopics.PaymentProcess}
+        filter:
+          payment_method:
+            - coin_payments
+            - psi_gate
+  PsiGatePayment:
+    handler: controllers/payment-process/psi-gate/handler.handler
+    timeout: 300
+    events:
+      - sns: ${self:custom.snsTopics.PsiGatePayment}
+        filter:
+          payment_method:
+            - psi_gate
+  CoinPaymentPayment:
+    handler: controllers/payment-process/coin-payments/index.handler
+    timeout: 300
+    events:
+      - sns: ${self:custom.snsTopics.CoinPaymentsPayment}
+        filter:
+          payment_method:
+            - coin_payments
