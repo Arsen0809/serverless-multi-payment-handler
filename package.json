@@ -14,7 +14,7 @@
     "aws-sdk": "^2.209.0",
     "babel-runtime": "6.23.0",
     "coinpayments": "^1.1.6",
-    "lodash": "4.17.4",
+    "lodash": "4.17.19",
     "md5": "^2.2.1",
     "moment": "^2.20.1",
     "moment-timezone": "^0.5.14",
