@@ -41,7 +41,7 @@
     "glob": "7.1.2",
     "serverless-offline": "^3.17.0",
     "serverless-webpack": "^4.3.0",
-    "webpack": "2.6.1",
+    "webpack": "5.74.0",
     "webpack-node-externals": "^1.6.0"
   }
 }
